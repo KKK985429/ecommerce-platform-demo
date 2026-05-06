@@ -30,5 +30,7 @@ def test_bug_null_vip_breaks_discount_lookup(db_session, monkeypatch):
         ),
     )
 
-    with pytest.raises(TypeError):
-        get_vip_discount(db_session, user.id)
+    assert user.vip_level is None
+    # After fix: None vip_level should be treated as level 0 (0% discount)
+    discount = get_vip_discount(db_session, user.id)
+    assert discount == 0.0
