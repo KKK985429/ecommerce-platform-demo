@@ -35,6 +35,7 @@ def _gateway_settlement_amount(*, total: Decimal, coupon_discount: Decimal) -> D
         settlement_quote = {
             "gross_amount": settlement_quote["gross_amount"],
             "coupon_discount": settlement_quote["coupon_discount"],
+            "settlement_amount": settlement_quote["settlement_amount"],
         }
     return settlement_quote["settlement_amount"]
 
