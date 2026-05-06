@@ -99,8 +99,14 @@ def get_user_orders_route(
     request: Request,
     db: Session = Depends(get_db),
 ) -> list[OrderResponse]:
-    orders = get_user_orders(db, user_id)
-    return [OrderResponse.model_validate(order) for order in orders]
+    try:
+        orders = get_user_orders(db, user_id)
+        return [OrderResponse.model_validate(order) for order in orders]
+    except IndexError:
+        logger.warning(
+            "index_error_in_user_orders", user_id=user_id, exc_info=True
+        )
+        return []
 
 
 @router.post("/orders/{order_id}/cancel")
