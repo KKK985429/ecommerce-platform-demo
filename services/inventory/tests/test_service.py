@@ -18,10 +18,13 @@ def test_reserve_inventory_increases_reserved_qty(seeded_db):
     assert inventory.reserved_qty == 2
 
 
-def test_bug_missing_row_attribute_error_raises(seeded_db, monkeypatch):
+def test_get_inventory_returns_data_even_with_bug_flags(seeded_db, monkeypatch):
+    """Regression test: bug flags no longer cause AttributeError."""
     db, ids = seeded_db
     monkeypatch.setenv("BUG_INVENTORY_MISSING_ROW", "true")
     monkeypatch.setenv("BUG_INVENTORY_BROKEN_PRODUCT_ID", str(ids["product_id"]))
 
-    with pytest.raises(AttributeError):
-        get_inventory(db, ids["product_id"])
+    inventory = get_inventory(db, ids["product_id"])
+    assert inventory is not None
+    assert inventory.product_id == ids["product_id"]
+    assert inventory.total_qty == 10
