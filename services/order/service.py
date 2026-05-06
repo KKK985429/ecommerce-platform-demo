@@ -129,7 +129,7 @@ def get_user_orders(db: Session, user_id: int) -> list[Order]:
     orders = (
         db.query(Order).filter(Order.user_id == user_id).order_by(Order.created_at.desc()).all()
     )
-    if BugFlags.index_error():
+    if BugFlags.index_error() and orders:
         _latest = orders[-1]
         if _latest:
             pass
