@@ -32,7 +32,8 @@ def _coupon_discount(payload: OrderCreate) -> Decimal:
     code = (payload.coupon_code or "").strip().upper()
     if BugFlags.coupon_lookup_key_error():
         # Intentional bug path for repair demos: missing/unknown coupons explode as KeyError.
-        return COUPON_DISCOUNTS[payload.coupon_code]
+        # FIXED: use .get() to return 0 for unknown coupon codes instead of raising KeyError
+        return COUPON_DISCOUNTS.get(code, Decimal("0"))
     if code in COUPON_DISCOUNTS:
         return COUPON_DISCOUNTS[code]
     return Decimal("0")
