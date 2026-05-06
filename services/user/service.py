@@ -67,4 +67,8 @@ def get_user(db: Session, user_id: int) -> User:
 def get_vip_discount(db: Session, user_id: int) -> float:
     user = get_user(db, user_id)
     discount_rates = [0.0, 0.05, 0.10, 0.15]
+    if user.vip_level is None:
+        return 0.0
+    if user.vip_level < 0 or user.vip_level >= len(discount_rates):
+        return 0.0
     return discount_rates[user.vip_level]
