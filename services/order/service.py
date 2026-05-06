@@ -131,10 +131,8 @@ def get_user_orders(db: Session, user_id: int) -> list[Order]:
         db.query(Order).filter(Order.user_id == user_id).order_by(Order.created_at.desc()).all()
     )
     if BugFlags.index_error():
-        try:
-            _latest = orders[-1]
-        except IndexError:
-            pass
+        # FIXED: handle empty orders list to avoid IndexError
+        _latest = orders[-1] if orders else None
     return orders
 
 
