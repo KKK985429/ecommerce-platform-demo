@@ -32,16 +32,17 @@ def test_bug_index_error_no_longer_raises_for_user_without_orders(seeded_db, mon
     assert result == []
 
 
-def test_bug_coupon_lookup_key_error_raises_for_unknown_coupon(seeded_db, monkeypatch):
+def test_bug_coupon_lookup_key_error_no_longer_raises_for_unknown_coupon(seeded_db, monkeypatch):
     db, ids = seeded_db
     monkeypatch.setenv("BUG_ORDER_COUPON_KEY", "true")
 
-    with pytest.raises(KeyError):
-        create_order(
-            db,
-            OrderCreate(
-                user_id=ids["user_id"],
-                items=[{"product_id": ids["product_id"], "quantity": 1}],
-                coupon_code="FLASH50",
-            ),
-        )
+    # After fix: unknown coupon codes should not cause KeyError; should create order successfully
+    order = create_order(
+        db,
+        OrderCreate(
+            user_id=ids["user_id"],
+            items=[{"product_id": ids["product_id"], "quantity": 1}],
+            coupon_code="FLASH50",
+        ),
+    )
+    assert order.status == "paid"
