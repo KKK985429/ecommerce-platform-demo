@@ -40,12 +40,6 @@ def redis_lock(key: str, timeout: int = 5):
 
 
 def get_inventory(db: Session, product_id: int) -> Inventory:
-    if (
-        BugFlags.missing_row_attribute_error()
-        and product_id == BugFlags.broken_product_id()
-    ):
-        inventory = None
-        return inventory.total_qty  # type: ignore[union-attr,return-value]
     inventory = db.query(Inventory).filter(Inventory.product_id == product_id).first()
     if inventory is None:
         raise ValueError(f"Inventory for product {product_id} not found")
@@ -53,12 +47,6 @@ def get_inventory(db: Session, product_id: int) -> Inventory:
 
 
 def _locked_inventory(db: Session, product_id: int) -> Inventory:
-    if (
-        BugFlags.missing_row_attribute_error()
-        and product_id == BugFlags.broken_product_id()
-    ):
-        inventory = None
-        return inventory.total_qty  # type: ignore[union-attr,return-value]
     inventory = (
         db.query(Inventory)
         .filter(Inventory.product_id == product_id)
