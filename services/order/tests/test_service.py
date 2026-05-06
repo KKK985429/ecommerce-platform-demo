@@ -23,12 +23,13 @@ def test_create_order_service_moves_to_paid_and_calculates_amount(seeded_db):
     assert Decimal(order.final_amount) == Decimal("102.59")
 
 
-def test_bug_index_error_raises_for_user_without_orders(seeded_db, monkeypatch):
+def test_bug_index_error_no_longer_raises_for_user_without_orders(seeded_db, monkeypatch):
     db, ids = seeded_db
     monkeypatch.setenv("BUG_INDEX_ERROR", "true")
 
-    with pytest.raises(IndexError):
-        get_user_orders(db, ids["second_user_id"])
+    # After fix: should return empty list without raising IndexError
+    result = get_user_orders(db, ids["second_user_id"])
+    assert result == []
 
 
 def test_bug_coupon_lookup_key_error_raises_for_unknown_coupon(seeded_db, monkeypatch):
